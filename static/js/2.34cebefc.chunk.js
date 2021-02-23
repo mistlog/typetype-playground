@@ -2547,6 +2547,7 @@ exports.isRecordExpression = isRecordExpression;
 exports.isTupleExpression = isTupleExpression;
 exports.isDecimalLiteral = isDecimalLiteral;
 exports.isStaticBlock = isStaticBlock;
+exports.isModuleExpression = isModuleExpression;
 exports.isTSParameterProperty = isTSParameterProperty;
 exports.isTSDeclareFunction = isTSDeclareFunction;
 exports.isTSDeclareMethod = isTSDeclareMethod;
@@ -5353,6 +5354,21 @@ function isStaticBlock(node, opts) {
   return false;
 }
 
+function isModuleExpression(node, opts) {
+  if (!node) return false;
+  var nodeType = node.type;
+
+  if (nodeType === "ModuleExpression") {
+    if (typeof opts === "undefined") {
+      return true;
+    } else {
+      return (0, _shallowEqual.default)(node, opts);
+    }
+  }
+
+  return false;
+}
+
 function isTSParameterProperty(node, opts) {
   if (!node) return false;
   var nodeType = node.type;
@@ -6302,7 +6318,7 @@ function isExpression(node, opts) {
   if (!node) return false;
   var nodeType = node.type;
 
-  if ("ArrayExpression" === nodeType || "AssignmentExpression" === nodeType || "BinaryExpression" === nodeType || "CallExpression" === nodeType || "ConditionalExpression" === nodeType || "FunctionExpression" === nodeType || "Identifier" === nodeType || "StringLiteral" === nodeType || "NumericLiteral" === nodeType || "NullLiteral" === nodeType || "BooleanLiteral" === nodeType || "RegExpLiteral" === nodeType || "LogicalExpression" === nodeType || "MemberExpression" === nodeType || "NewExpression" === nodeType || "ObjectExpression" === nodeType || "SequenceExpression" === nodeType || "ParenthesizedExpression" === nodeType || "ThisExpression" === nodeType || "UnaryExpression" === nodeType || "UpdateExpression" === nodeType || "ArrowFunctionExpression" === nodeType || "ClassExpression" === nodeType || "MetaProperty" === nodeType || "Super" === nodeType || "TaggedTemplateExpression" === nodeType || "TemplateLiteral" === nodeType || "YieldExpression" === nodeType || "AwaitExpression" === nodeType || "Import" === nodeType || "BigIntLiteral" === nodeType || "OptionalMemberExpression" === nodeType || "OptionalCallExpression" === nodeType || "TypeCastExpression" === nodeType || "JSXElement" === nodeType || "JSXFragment" === nodeType || "BindExpression" === nodeType || "PipelinePrimaryTopicReference" === nodeType || "DoExpression" === nodeType || "RecordExpression" === nodeType || "TupleExpression" === nodeType || "DecimalLiteral" === nodeType || "TSAsExpression" === nodeType || "TSTypeAssertion" === nodeType || "TSNonNullExpression" === nodeType || nodeType === "Placeholder" && ("Expression" === node.expectedNode || "Identifier" === node.expectedNode || "StringLiteral" === node.expectedNode)) {
+  if ("ArrayExpression" === nodeType || "AssignmentExpression" === nodeType || "BinaryExpression" === nodeType || "CallExpression" === nodeType || "ConditionalExpression" === nodeType || "FunctionExpression" === nodeType || "Identifier" === nodeType || "StringLiteral" === nodeType || "NumericLiteral" === nodeType || "NullLiteral" === nodeType || "BooleanLiteral" === nodeType || "RegExpLiteral" === nodeType || "LogicalExpression" === nodeType || "MemberExpression" === nodeType || "NewExpression" === nodeType || "ObjectExpression" === nodeType || "SequenceExpression" === nodeType || "ParenthesizedExpression" === nodeType || "ThisExpression" === nodeType || "UnaryExpression" === nodeType || "UpdateExpression" === nodeType || "ArrowFunctionExpression" === nodeType || "ClassExpression" === nodeType || "MetaProperty" === nodeType || "Super" === nodeType || "TaggedTemplateExpression" === nodeType || "TemplateLiteral" === nodeType || "YieldExpression" === nodeType || "AwaitExpression" === nodeType || "Import" === nodeType || "BigIntLiteral" === nodeType || "OptionalMemberExpression" === nodeType || "OptionalCallExpression" === nodeType || "TypeCastExpression" === nodeType || "JSXElement" === nodeType || "JSXFragment" === nodeType || "BindExpression" === nodeType || "PipelinePrimaryTopicReference" === nodeType || "DoExpression" === nodeType || "RecordExpression" === nodeType || "TupleExpression" === nodeType || "DecimalLiteral" === nodeType || "ModuleExpression" === nodeType || "TSAsExpression" === nodeType || "TSTypeAssertion" === nodeType || "TSNonNullExpression" === nodeType || nodeType === "Placeholder" && ("Expression" === node.expectedNode || "Identifier" === node.expectedNode || "StringLiteral" === node.expectedNode)) {
     if (typeof opts === "undefined") {
       return true;
     } else {
@@ -8059,6 +8075,7 @@ exports.recordExpression = recordExpression;
 exports.tupleExpression = tupleExpression;
 exports.decimalLiteral = decimalLiteral;
 exports.staticBlock = staticBlock;
+exports.moduleExpression = moduleExpression;
 exports.tSParameterProperty = exports.tsParameterProperty = tsParameterProperty;
 exports.tSDeclareFunction = exports.tsDeclareFunction = tsDeclareFunction;
 exports.tSDeclareMethod = exports.tsDeclareMethod = tsDeclareMethod;
@@ -8849,6 +8866,10 @@ function decimalLiteral(value) {
 
 function staticBlock(body) {
   return (0, _builder.default).apply(void 0, ["StaticBlock"].concat(Array.prototype.slice.call(arguments)));
+}
+
+function moduleExpression(body) {
+  return (0, _builder.default).apply(void 0, ["ModuleExpression"].concat(Array.prototype.slice.call(arguments)));
 }
 
 function tsParameterProperty(parameter) {
@@ -10928,7 +10949,7 @@ function chain() {
     fns[_key4] = arguments[_key4];
   }
 
-  var validate = function validate() {
+  function validate() {
     var _iterator3 = _createForOfIteratorHelper(fns),
         _step3;
 
@@ -10942,9 +10963,14 @@ function chain() {
     } finally {
       _iterator3.f();
     }
-  };
+  }
 
   validate.chainOf = fns;
+
+  if (fns.length >= 2 && "type" in fns[0] && fns[0].type === "array" && !("each" in fns[1])) {
+    throw new Error("An assertValueType(\"array\") validator can only be followed by an assertEach(...) validator.");
+  }
+
   return validate;
 }
 
@@ -16710,7 +16736,7 @@ exports.patternLikeCommon = patternLikeCommon;
     exportKind: (0, _utils.validateOptional)((0, _utils.assertOneOf)("type", "value")),
     assertions: {
       optional: true,
-      validate: (0, _utils.chain)((0, _utils.assertValueType)("array"), (0, _utils.assertNodeType)("ImportAttribute"))
+      validate: (0, _utils.chain)((0, _utils.assertValueType)("array"), (0, _utils.assertEach)((0, _utils.assertNodeType)("ImportAttribute")))
     }
   }
 });
@@ -16747,7 +16773,7 @@ exports.patternLikeCommon = patternLikeCommon;
     },
     assertions: {
       optional: true,
-      validate: (0, _utils.chain)((0, _utils.assertValueType)("array"), (0, _utils.assertNodeType)("ImportAttribute"))
+      validate: (0, _utils.chain)((0, _utils.assertValueType)("array"), (0, _utils.assertEach)((0, _utils.assertNodeType)("ImportAttribute")))
     },
     specifiers: {
       default: [],
@@ -16819,7 +16845,7 @@ exports.patternLikeCommon = patternLikeCommon;
   fields: {
     assertions: {
       optional: true,
-      validate: (0, _utils.chain)((0, _utils.assertValueType)("array"), (0, _utils.assertNodeType)("ImportAttribute"))
+      validate: (0, _utils.chain)((0, _utils.assertValueType)("array"), (0, _utils.assertEach)((0, _utils.assertNodeType)("ImportAttribute")))
     },
     specifiers: {
       validate: (0, _utils.chain)((0, _utils.assertValueType)("array"), (0, _utils.assertEach)((0, _utils.assertNodeType)("ImportSpecifier", "ImportDefaultSpecifier", "ImportNamespaceSpecifier")))
@@ -40811,7 +40837,9 @@ exports.TypeSpreadProperty = TypeSpreadProperty;
 function TypeObjectProperty() {
   var action = function action(_ref14) {
     var name = _ref14.name,
-        rawValue = _ref14.value;
+        rawValue = _ref14.value,
+        optional = _ref14.optional,
+        readonly = _ref14.readonly;
     var value = rawValue ||
     /** shorthand */
     {
@@ -40821,15 +40849,21 @@ function TypeObjectProperty() {
     return {
       kind: "TypeObjectProperty",
       name: name,
-      value: value
+      value: value,
+      optional: Boolean(optional),
+      readonly: Boolean(readonly)
     };
   };
 
   return react_peg_1.ReactPeg.createChunk("pattern", {
     action: action
-  }, react_peg_1.ReactPeg.createChunk(common_1._, null), react_peg_1.ReactPeg.createChunk(identifier_1.Identifier, {
+  }, react_peg_1.ReactPeg.createChunk(common_1._, null), react_peg_1.ReactPeg.createChunk("opt", {
+    label: "readonly"
+  }, common_1.Text("readonly")), react_peg_1.ReactPeg.createChunk(identifier_1.Identifier, {
     label: "name"
   }), react_peg_1.ReactPeg.createChunk("opt", {
+    label: "optional"
+  }, common_1.Text("?")), react_peg_1.ReactPeg.createChunk("opt", {
     label: "value"
   }, react_peg_1.ReactPeg.createChunk("pattern", {
     action: function action(_ref15) {
@@ -40904,7 +40938,7 @@ var _toConsumableArray = __webpack_require__(16);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.MappedTypeExpression = exports.IndexType = exports.KeyOfType = exports.OperatorType = exports.UnionType = exports.InferType = exports.ParamList = exports.TypeExpressionList = exports.TypeCallExpression = exports.ConditionalTypeExpression = exports.TypeArrowFunctionExpression = exports.TypeExpression = void 0;
+exports.MappedTypeExpression = exports.IndexType = exports.KeyOfType = exports.OperatorType = exports.IntersectionType = exports.UnionType = exports.InferType = exports.ParamList = exports.TypeExpressionList = exports.TypeCallExpression = exports.ConditionalTypeExpression = exports.TypeArrowFunctionExpression = exports.TypeExpression = void 0;
 
 var react_peg_1 = __webpack_require__(13);
 
@@ -40917,7 +40951,7 @@ var statement_1 = __webpack_require__(106);
 var function_1 = __webpack_require__(107);
 
 function TypeExpression() {
-  return react_peg_1.ReactPeg.createChunk("or", null, react_peg_1.ReactPeg.createChunk(function_1.FunctionType, null), react_peg_1.ReactPeg.createChunk(OperatorType, null), react_peg_1.ReactPeg.createChunk(IndexType, null), react_peg_1.ReactPeg.createChunk(UnionType, null), react_peg_1.ReactPeg.createChunk(ConditionalTypeExpression, null), react_peg_1.ReactPeg.createChunk(MappedTypeExpression, null), react_peg_1.ReactPeg.createChunk(TypeArrowFunctionExpression, null), react_peg_1.ReactPeg.createChunk(TypeCallExpression, null), react_peg_1.ReactPeg.createChunk(basic_1.BasicType, null), react_peg_1.ReactPeg.createChunk(InferType, null), react_peg_1.ReactPeg.createChunk(basic_1.TypeReference, null));
+  return react_peg_1.ReactPeg.createChunk("or", null, react_peg_1.ReactPeg.createChunk(function_1.FunctionType, null), react_peg_1.ReactPeg.createChunk(OperatorType, null), react_peg_1.ReactPeg.createChunk(IndexType, null), react_peg_1.ReactPeg.createChunk(UnionType, null), react_peg_1.ReactPeg.createChunk(IntersectionType, null), react_peg_1.ReactPeg.createChunk(ConditionalTypeExpression, null), react_peg_1.ReactPeg.createChunk(MappedTypeExpression, null), react_peg_1.ReactPeg.createChunk(TypeArrowFunctionExpression, null), react_peg_1.ReactPeg.createChunk(TypeCallExpression, null), react_peg_1.ReactPeg.createChunk(basic_1.BasicType, null), react_peg_1.ReactPeg.createChunk(InferType, null), react_peg_1.ReactPeg.createChunk(basic_1.TypeReference, null));
 }
 
 exports.TypeExpression = TypeExpression;
@@ -41093,6 +41127,26 @@ function UnionType() {
 
 exports.UnionType = UnionType;
 
+function IntersectionType() {
+  var action = function action(_ref11) {
+    var types = _ref11.types;
+    return {
+      kind: "IntersectionType",
+      types: types
+    };
+  };
+  /** An intersection type combines multiple types into one */
+
+
+  return react_peg_1.ReactPeg.createChunk("pattern", {
+    action: action
+  }, react_peg_1.ReactPeg.createChunk("or", null, common_1.Text("&"), common_1.Text("combine")), common_1.Text("["), react_peg_1.ReactPeg.createChunk(TypeExpressionList, {
+    label: "types"
+  }), common_1.Text("]"));
+}
+
+exports.IntersectionType = IntersectionType;
+
 function OperatorType() {
   return react_peg_1.ReactPeg.createChunk(KeyOfType, null);
 }
@@ -41100,8 +41154,8 @@ function OperatorType() {
 exports.OperatorType = OperatorType;
 
 function KeyOfType() {
-  var action = function action(_ref11) {
-    var operand = _ref11.operand;
+  var action = function action(_ref12) {
+    var operand = _ref12.operand;
     return {
       kind: "KeyOfType",
       operand: operand
@@ -41126,9 +41180,9 @@ function IndexTypeHead() {
 }
 
 function IndexType() {
-  var action = function action(_ref12) {
-    var head = _ref12.head,
-        members = _ref12.members;
+  var action = function action(_ref13) {
+    var head = _ref13.head,
+        members = _ref13.members;
     return {
       kind: "IndexType",
       head: head,
@@ -41144,8 +41198,8 @@ function IndexType() {
     type: "+",
     label: "members"
   }, react_peg_1.ReactPeg.createChunk("pattern", {
-    action: function action(_ref13) {
-      var indexType = _ref13.indexType;
+    action: function action(_ref14) {
+      var indexType = _ref14.indexType;
       return indexType;
     }
   }, common_1.Text("["), react_peg_1.ReactPeg.createChunk(TypeExpression, {
@@ -41156,8 +41210,8 @@ function IndexType() {
 exports.IndexType = IndexType;
 
 function MappedTypeExpression() {
-  var action = function action(_ref14) {
-    var statement = _ref14.statement;
+  var action = function action(_ref15) {
+    var statement = _ref15.statement;
     return {
       kind: "MappedTypeExpression",
       body: statement
@@ -41708,7 +41762,10 @@ function tsTypeLiteral(ast) {
           var key = Identifier(each.name);
           var value = TSType(each.value);
           var prop = t.tsPropertySignature(key, t.tsTypeAnnotation(value));
-          return prop;
+          return Object.assign(Object.assign({}, prop), {
+            readonly: each.readonly,
+            optional: each.optional
+          });
         }
 
       case "TypeSpreadProperty":
@@ -41938,6 +41995,11 @@ function TSType(ast) {
 
     case "UnionType":
       return t.tsUnionType(ast.types.map(function (each) {
+        return TSType(each);
+      }));
+
+    case "IntersectionType":
+      return t.tsIntersectionType(ast.types.map(function (each) {
         return TSType(each);
       }));
 
@@ -44689,6 +44751,7 @@ defineInterfaceishType("DeclareInterface");
     typeParameters: (0, _utils.validateOptionalType)("TypeParameterDeclaration"),
     params: (0, _utils.validate)((0, _utils.arrayOfType)("FunctionTypeParam")),
     rest: (0, _utils.validateOptionalType)("FunctionTypeParam"),
+    this: (0, _utils.validateOptionalType)("FunctionTypeParam"),
     returnType: (0, _utils.validateType)("FlowType")
   }
 });
@@ -44952,7 +45015,8 @@ defineInterfaceishType("InterfaceDeclaration");
   visitor: ["members"],
   fields: {
     explicitType: (0, _utils.validate)((0, _utils.assertValueType)("boolean")),
-    members: (0, _utils.validateArrayOfType)("EnumBooleanMember")
+    members: (0, _utils.validateArrayOfType)("EnumBooleanMember"),
+    hasUnknownMembers: (0, _utils.validate)((0, _utils.assertValueType)("boolean"))
   }
 });
 (0, _utils.default)("EnumNumberBody", {
@@ -44960,7 +45024,8 @@ defineInterfaceishType("InterfaceDeclaration");
   visitor: ["members"],
   fields: {
     explicitType: (0, _utils.validate)((0, _utils.assertValueType)("boolean")),
-    members: (0, _utils.validateArrayOfType)("EnumNumberMember")
+    members: (0, _utils.validateArrayOfType)("EnumNumberMember"),
+    hasUnknownMembers: (0, _utils.validate)((0, _utils.assertValueType)("boolean"))
   }
 });
 (0, _utils.default)("EnumStringBody", {
@@ -44968,14 +45033,16 @@ defineInterfaceishType("InterfaceDeclaration");
   visitor: ["members"],
   fields: {
     explicitType: (0, _utils.validate)((0, _utils.assertValueType)("boolean")),
-    members: (0, _utils.validateArrayOfType)(["EnumStringMember", "EnumDefaultedMember"])
+    members: (0, _utils.validateArrayOfType)(["EnumStringMember", "EnumDefaultedMember"]),
+    hasUnknownMembers: (0, _utils.validate)((0, _utils.assertValueType)("boolean"))
   }
 });
 (0, _utils.default)("EnumSymbolBody", {
   aliases: ["EnumBody"],
   visitor: ["members"],
   fields: {
-    members: (0, _utils.validateArrayOfType)("EnumDefaultedMember")
+    members: (0, _utils.validateArrayOfType)("EnumDefaultedMember"),
+    hasUnknownMembers: (0, _utils.validate)((0, _utils.assertValueType)("boolean"))
   }
 });
 (0, _utils.default)("EnumBooleanMember", {
@@ -45294,9 +45361,11 @@ function _interopRequireWildcard(obj) {
   return newObj;
 }
 
-(0, _utils.default)("Noop", {
-  visitor: []
-});
+{
+  (0, _utils.default)("Noop", {
+    visitor: []
+  });
+}
 (0, _utils.default)("Placeholder", {
   visitor: [],
   builder: ["expectedNode", "name"],
@@ -45575,6 +45644,15 @@ function _interopRequireWildcard(obj) {
   },
   aliases: ["Scopable", "BlockParent"]
 });
+(0, _utils.default)("ModuleExpression", {
+  visitor: ["body"],
+  fields: {
+    body: {
+      validate: (0, _utils.assertNodeType)("Program")
+    }
+  },
+  aliases: ["Expression"]
+});
 
 /***/ }),
 /* 298 */
@@ -45740,13 +45818,18 @@ for (var _i = 0, _tsKeywordTypes = tsKeywordTypes; _i < _tsKeywordTypes.length; 
   visitor: [],
   fields: {}
 });
-var fnOrCtr = {
+var fnOrCtrBase = {
   aliases: ["TSType"],
-  visitor: ["typeParameters", "parameters", "typeAnnotation"],
-  fields: signatureDeclarationCommon
+  visitor: ["typeParameters", "parameters", "typeAnnotation"]
 };
-(0, _utils.default)("TSFunctionType", fnOrCtr);
-(0, _utils.default)("TSConstructorType", fnOrCtr);
+(0, _utils.default)("TSFunctionType", Object.assign({}, fnOrCtrBase, {
+  fields: signatureDeclarationCommon
+}));
+(0, _utils.default)("TSConstructorType", Object.assign({}, fnOrCtrBase, {
+  fields: Object.assign({}, signatureDeclarationCommon, {
+    abstract: (0, _utils.validateOptional)(bool)
+  })
+}));
 (0, _utils.default)("TSTypeReference", {
   aliases: ["TSType"],
   visitor: ["typeName", "typeParameters"],
@@ -46277,6 +46360,7 @@ exports.assertRecordExpression = assertRecordExpression;
 exports.assertTupleExpression = assertTupleExpression;
 exports.assertDecimalLiteral = assertDecimalLiteral;
 exports.assertStaticBlock = assertStaticBlock;
+exports.assertModuleExpression = assertModuleExpression;
 exports.assertTSParameterProperty = assertTSParameterProperty;
 exports.assertTSDeclareFunction = assertTSDeclareFunction;
 exports.assertTSDeclareMethod = assertTSDeclareMethod;
@@ -47118,6 +47202,10 @@ function assertDecimalLiteral(node, opts) {
 
 function assertStaticBlock(node, opts) {
   assert("StaticBlock", node, opts);
+}
+
+function assertModuleExpression(node, opts) {
+  assert("ModuleExpression", node, opts);
 }
 
 function assertTSParameterProperty(node, opts) {
@@ -48817,6 +48905,12 @@ Object.defineProperty(exports, "StaticBlock", {
   enumerable: true,
   get: function get() {
     return _index.staticBlock;
+  }
+});
+Object.defineProperty(exports, "ModuleExpression", {
+  enumerable: true,
+  get: function get() {
+    return _index.moduleExpression;
   }
 });
 Object.defineProperty(exports, "TSParameterProperty", {
@@ -53576,6 +53670,9 @@ var Printer = /*#__PURE__*/function () {
 }();
 
 Object.assign(Printer.prototype, generatorFunctions);
+{
+  Printer.prototype.Noop = function Noop() {};
+}
 var _default = Printer;
 exports.default = _default;
 
@@ -54726,6 +54823,7 @@ exports.MemberExpression = MemberExpression;
 exports.MetaProperty = MetaProperty;
 exports.PrivateName = PrivateName;
 exports.V8IntrinsicIdentifier = V8IntrinsicIdentifier;
+exports.ModuleExpression = ModuleExpression;
 exports.AwaitExpression = exports.YieldExpression = void 0;
 
 var t = _interopRequireWildcard(__webpack_require__(9));
@@ -55037,6 +55135,22 @@ function PrivateName(node) {
 function V8IntrinsicIdentifier(node) {
   this.token("%");
   this.word(node.name);
+}
+
+function ModuleExpression(node) {
+  this.word("module");
+  this.space();
+  this.token("{");
+
+  if (node.body.body.length === 0) {
+    this.token("}");
+  } else {
+    this.newline();
+    this.printSequence(node.body.body, node, {
+      indent: true
+    });
+    this.rightBrace();
+  }
 }
 
 /***/ }),
@@ -58655,6 +58769,11 @@ function enumBody(context, node) {
     _iterator.f();
   }
 
+  if (node.hasUnknownMembers) {
+    context.token("...");
+    context.newline();
+  }
+
   context.dedent();
   context.token("}");
 }
@@ -58745,6 +58864,19 @@ function ExistsTypeAnnotation() {
 function FunctionTypeAnnotation(node, parent) {
   this.print(node.typeParameters, node);
   this.token("(");
+
+  if (node.this) {
+    this.word("this");
+    this.token(":");
+    this.space();
+    this.print(node.this.typeAnnotation, node);
+
+    if (node.params.length || node.rest) {
+      this.token(",");
+      this.space();
+    }
+  }
+
   this.printList(node.params, node);
 
   if (node.rest) {
@@ -59151,7 +59283,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.File = File;
 exports.Program = Program;
 exports.BlockStatement = BlockStatement;
-exports.Noop = Noop;
 exports.Directive = Directive;
 exports.DirectiveLiteral = DirectiveLiteral;
 exports.InterpreterDirective = InterpreterDirective;
@@ -59251,8 +59382,6 @@ function BlockStatement(node) {
     this.token("}");
   }
 }
-
-function Noop() {}
 
 function Directive(node) {
   this.print(node.value, node);
@@ -59860,6 +59989,11 @@ function TSFunctionType(node) {
 }
 
 function TSConstructorType(node) {
+  if (node.abstract) {
+    this.word("abstract");
+    this.space();
+  }
+
   this.word("new");
   this.space();
   this.tsPrintFunctionOrConstructorType(node);
@@ -73882,4 +74016,4 @@ function mergeCssSets(styleSets, options) {
 
 /***/ })
 ]]);
-//# sourceMappingURL=2.ea2a1628.chunk.js.map
+//# sourceMappingURL=2.34cebefc.chunk.js.map
