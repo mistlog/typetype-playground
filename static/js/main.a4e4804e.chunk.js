@@ -1,6 +1,6 @@
 (this["webpackJsonptypetype-playground"] = this["webpackJsonptypetype-playground"] || []).push([[0],{
 
-/***/ 372:
+/***/ 373:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -18,7 +18,7 @@ var react_dom_default = /*#__PURE__*/__webpack_require__.n(react_dom);
 var slicedToArray = __webpack_require__(18);
 
 // EXTERNAL MODULE: ./node_modules/@fluentui/merge-styles/lib/mergeStyleSets.js + 1 modules
-var mergeStyleSets = __webpack_require__(403);
+var mergeStyleSets = __webpack_require__(404);
 
 // EXTERNAL MODULE: ./node_modules/react/jsx-runtime.js
 var jsx_runtime = __webpack_require__(6);
@@ -42,7 +42,7 @@ es["b" /* monaco */].init().then(function(monaco){monaco.languages.typescript.ty
  * 
  */var Editor_classNames=Object(mergeStyleSets["a" /* mergeStyleSets */])({container:{height:"100%",display:"flex"}});
 // EXTERNAL MODULE: ./node_modules/office-ui-fabric-react/lib/components/Nav/Nav.js + 110 modules
-var Nav = __webpack_require__(402);
+var Nav = __webpack_require__(403);
 
 // EXTERNAL MODULE: ./src/component/examples/url-parser.json
 var url_parser = __webpack_require__(68);
@@ -92,7 +92,7 @@ registerValidSW(swUrl,config);}}).catch(function(){console.log('No internet conn
 var lib = __webpack_require__(153);
 
 // EXTERNAL MODULE: ./node_modules/@fluentui/merge-styles/lib/mergeStyles.js
-var mergeStyles = __webpack_require__(401);
+var mergeStyles = __webpack_require__(402);
 
 // CONCATENATED MODULE: ./src/index.tsx
 Object(lib["a" /* initializeIcons */])();// Inject some global styles
@@ -110,5 +110,5 @@ module.exports = JSON.parse("{\"code\":\"/**\\r\\n * test it in typescript playg
 
 /***/ })
 
-},[[372,1,2]]]);
-//# sourceMappingURL=main.7b29ec18.chunk.js.map
+},[[373,1,2]]]);
+//# sourceMappingURL=main.a4e4804e.chunk.js.map
