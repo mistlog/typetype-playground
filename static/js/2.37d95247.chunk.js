@@ -41263,7 +41263,7 @@ function TypeForInStatement() {
     // TODO: returnType must be object type { key: ..., value: ... }
     var pair = returnType.argument; // may be used in as clause
 
-    var as = findProp(pair, "key").value;
+    var as = findProp(pair, "key");
     var value = findProp(pair, "value").value;
     return {
       kind: "TypeForInStatement",
@@ -41754,28 +41754,29 @@ function tsConditionalType(ast) {
   return type;
 }
 
+function tsPropertySignature(ast) {
+  var key = Identifier(ast.name);
+  var value = TSType(ast.value);
+  var prop = t.tsPropertySignature(key, t.tsTypeAnnotation(value));
+  return Object.assign(Object.assign({}, prop), {
+    readonly: ast.readonly,
+    optional: ast.optional
+  });
+}
+
 function tsTypeLiteral(ast) {
   var props = ast.props.map(function (each) {
     switch (each.kind) {
       case "TypeObjectProperty":
         {
-          var key = Identifier(each.name);
-          var value = TSType(each.value);
-          var prop = t.tsPropertySignature(key, t.tsTypeAnnotation(value));
-          return Object.assign(Object.assign({}, prop), {
-            readonly: each.readonly,
-            optional: each.optional
-          });
+          return tsPropertySignature(each);
         }
 
       case "TypeSpreadProperty":
         {
           if (each.param.kind === "TypeReference") {
             var type = TSType(each.param);
-
-            var _prop = t.tsPropertySignature(Identifier(each.param.typeName), t.tsTypeAnnotation(type));
-
-            return _prop;
+            return type;
           } else if (each.param.kind === "TypeCallExpression") {
             var typeName = Identifier(each.param.callee.typeName);
             var params = each.param.params.map(function (each) {
@@ -41786,10 +41787,7 @@ function tsTypeLiteral(ast) {
               throw new Error("unkonwn param: ".concat(JSON.stringify(each, null, 4)));
             });
             var typeReference = t.tsTypeReference(typeName, t.tsTypeParameterInstantiation(params));
-
-            var _prop2 = t.tsPropertySignature(typeName, t.tsTypeAnnotation(typeReference));
-
-            return _prop2;
+            return typeReference;
           }
         }
     }
@@ -41800,7 +41798,11 @@ function tsTypeLiteral(ast) {
 
   if (isSpread) {
     var tsTypeProps = props.map(function (each) {
-      return t.tsTypeLiteral([each]);
+      if (t.isTSPropertySignature(each)) {
+        return t.tsTypeLiteral([each]);
+      } else {
+        return each;
+      }
     });
     var assigned = assignObjects(tsTypeProps);
     return assigned;
@@ -41900,11 +41902,11 @@ function tsFunctionType(ast) {
 }
 
 function resolveMappedTypeAsClause(as, key) {
-  if (as.kind === "TypeReference" && as.typeName.name === key.name) {
+  if (as.value.kind === "TypeReference" && as.value.typeName.name === key.name) {
     return null;
   }
 
-  return TSType(as);
+  return TSType(as.value);
 }
 
 function tsMappedType(ast) {
@@ -41915,7 +41917,10 @@ function tsMappedType(ast) {
   var typeParam = t.tsTypeParameter(TSType(keys), null, key.name);
   var nameType = resolveMappedTypeAsClause(as, key);
   var type = t.tsMappedType(typeParam, TSType(value), nameType);
-  return type;
+  return Object.assign(Object.assign({}, type), {
+    readonly: as.readonly,
+    optional: as.optional
+  });
 }
 
 function TSType(ast) {
@@ -74016,4 +74021,4 @@ function mergeCssSets(styleSets, options) {
 
 /***/ })
 ]]);
-//# sourceMappingURL=2.34cebefc.chunk.js.map
+//# sourceMappingURL=2.37d95247.chunk.js.map
