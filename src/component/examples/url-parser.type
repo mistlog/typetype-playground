@@ -1,14 +1,8 @@
-/**
- * test it in typescript playgorund:
- * 
- * type url = `http://admin:123456@github.com:8080`;
- * type result = parseURL<url>
- */
 export type function parseURL = (text) => ^{
     if (parseProtocol<text> extends [infer protocol, infer rest]) {
         return {
             protocol,
-            ...parseAuthority<rest>
+            rest
         }
     } else {
         return never
@@ -18,7 +12,7 @@ export type function parseURL = (text) => ^{
 type function parseProtocol = (text) => ^{
     if(text extends `${infer protocol}://${infer rest}`) {
         return [
-            protocol,
+            { protocol },
             rest
         ]
     } else {
@@ -34,11 +28,11 @@ type function parseUserInfo = (text) => ^{
     }
 }
 
-type function parseAuthority = (text) => ^{
+export type function parseAuthority = (text) => ^{
     if(text extends `${infer authority}@${infer rest}`) {
         return {
             authority: parseUserInfo<authority>,
-            ...parseHost<rest>
+            rest
         }
     } else { 
         return {
@@ -48,7 +42,7 @@ type function parseAuthority = (text) => ^{
     }
 }
 
-type function parseHost = (text) => ^{
+export type function parseHost = (text) => ^{
     if(text extends `${infer name}:${infer port}`) {
         return ^{
             if(parsePort<port> extends never) {
