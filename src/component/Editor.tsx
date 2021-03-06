@@ -53,7 +53,11 @@ export function Editor(props: IEditorProps) {
         <div className={classNames.container} >
             <MonacoEditor height="100%" width="50%" language="typescript" options={options} editorDidMount={handleEditorDidMount} value={defaultCode} />
             <div style={{ width: "50%" }}>
-                <MonacoEditor height="100%" width="100%" language="typescript" options={{ ...options, readOnly: true }} value={output} />
+                <MonacoEditor height="100%" width="100%" language="typescript" options={{
+                    ...options, readOnly: true,
+                    wordWrap: 'wordWrapColumn',
+                    wordWrapColumn: 80,
+                }} value={output} />
             </div>
         </div>
     )

@@ -3,10 +3,10 @@ import { mergeStyleSets } from '@fluentui/merge-styles';
 import { Header } from './component/Header';
 import { Editor } from './component/Editor';
 import { ExampleNav } from './component/ExampleNav';
-import UrlParserExample from "./component/examples/url-parser.json";
+import SyntaxExample from "./component/examples/syntax.json";
 
 export function App() {
-    const [exampleCode, setExampleCode] = useState(UrlParserExample.code);
+    const [exampleCode, setExampleCode] = useState(SyntaxExample.code);
 
     return (
         <div className={classNames.container}>

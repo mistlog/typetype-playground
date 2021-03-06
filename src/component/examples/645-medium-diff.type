@@ -1,0 +1,41 @@
+/**
+ * ref:
+ * - https://github.com/type-challenges/type-challenges/blob/master/questions/645-medium-diff/README.md
+ * - https://github.com/type-challenges/type-challenges/issues/832
+ */
+
+/**
+ * eg.
+ * 
+ *  type Foo = {
+        name: string
+        age: string
+    }
+    
+    type Bar = {
+        name: string
+        age: string
+        gender: number
+    }
+
+    checks([
+        check<Diff<Foo, Bar>, { gender: number }, Test.Pass>(),
+    ])
+ */
+ 
+export type function Diff = (a, b) => ^{
+    for(key in union [keyof a, keyof b]) {
+        return {
+            key: Exclude<key, combine [keyof a, keyof b]>,
+            value: ^{
+                if(key extends keyof a) {
+                    return a[key]
+                } else if(key extends keyof b) {
+                    return b[key]
+                } else {
+                    return never
+                }
+            }
+        }
+    }
+}

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Nav, INavLinkGroup, INavLink } from '@fluentui/react';
 import UrlParserExample from "./examples/url-parser.json";
+import SyntaxExample from "./examples/syntax.json";
+import DiffExample from "./examples/645-medium-diff.json";
+import StringToUnionExample from "./examples/531-medium-string-to-union.json";
+import PermutationExample from "./examples/296-medium-permutation.json";
 
 export type Examples = Map<string, Array<IExample>>;
 
@@ -15,8 +19,12 @@ export interface IExampleNav {
 
 const examples = new Map<string, Array<IExample>>([
     ["Examples", [
+        { name: "syntax", code: SyntaxExample.code },
+        { name: "string-to-union", code: StringToUnionExample.code },
+        { name: "object-diff", code: DiffExample.code },
+        { name: "permutation", code: PermutationExample.code},
         { name: "url-parser", code: UrlParserExample.code },
-    ]]
+    ]],
 ]);
 
 export function ExampleNav(props: IExampleNav) {
