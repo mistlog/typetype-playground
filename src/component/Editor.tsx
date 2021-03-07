@@ -28,11 +28,12 @@ export function Editor(props: IEditorProps) {
         const code = editorRef.current.getValue();
 
         try {
-            const result = transform(code).code;
+            const result = transform(code, { debug: true }).code;
             setOutput(result);
         } catch (error) {
             delete error.stack;
-            setOutput(JSON.stringify(error, null, 4));
+            const output = `message:\n${error.message}\n\nlocation:\n${JSON.stringify(error.location, null, 4)}\n\n${error.backtrace}`;
+            setOutput(output);
         }
     }
 
