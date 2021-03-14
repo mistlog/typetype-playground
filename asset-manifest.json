@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.js": "/typetype-playground/static/js/main.2105ea47.chunk.js",
-    "main.js.map": "/typetype-playground/static/js/main.2105ea47.chunk.js.map",
+    "main.js": "/typetype-playground/static/js/main.69df7791.chunk.js",
+    "main.js.map": "/typetype-playground/static/js/main.69df7791.chunk.js.map",
     "runtime-main.js": "/typetype-playground/static/js/runtime-main.28f71464.js",
     "runtime-main.js.map": "/typetype-playground/static/js/runtime-main.28f71464.js.map",
-    "static/js/2.fdae6e04.chunk.js": "/typetype-playground/static/js/2.fdae6e04.chunk.js",
-    "static/js/2.fdae6e04.chunk.js.map": "/typetype-playground/static/js/2.fdae6e04.chunk.js.map",
+    "static/js/2.33e59b1c.chunk.js": "/typetype-playground/static/js/2.33e59b1c.chunk.js",
+    "static/js/2.33e59b1c.chunk.js.map": "/typetype-playground/static/js/2.33e59b1c.chunk.js.map",
     "index.html": "/typetype-playground/index.html"
   },
   "entrypoints": [
     "static/js/runtime-main.28f71464.js",
-    "static/js/2.fdae6e04.chunk.js",
-    "static/js/main.2105ea47.chunk.js"
+    "static/js/2.33e59b1c.chunk.js",
+    "static/js/main.69df7791.chunk.js"
   ]
 }
