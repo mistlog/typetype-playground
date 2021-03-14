@@ -7,7 +7,7 @@
     "@babel/core": "7.12.3",
     "@fluentui/merge-styles": "^8.0.0-beta.0",
     "@fluentui/react": "^7.155.3",
-    "@mistlog/typetype": "0.0.23",
+    "@mistlog/typetype": "0.0.28",
     "@monaco-editor/react": "^3.8.3",
     "@pmmmwh/react-refresh-webpack-plugin": "0.4.3",
     "@svgr/webpack": "5.5.0",
